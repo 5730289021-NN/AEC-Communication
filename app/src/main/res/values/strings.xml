@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">AEC Communication</string>
+    <string name="title_play">Play</string>
+    <string name="title_talk">Talk</string>
+    <string name="title_teach">Teach</string>
+    <string name="database">AECX.db</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
