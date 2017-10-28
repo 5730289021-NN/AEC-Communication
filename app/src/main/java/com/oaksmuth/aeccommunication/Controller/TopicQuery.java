@@ -20,7 +20,7 @@ public class TopicQuery {
         helper.openDatabase();
         Cursor cursor = helper.rawQuery("SELECT Header.HeaderString, TopicString FROM Topic INNER JOIN Header ON Topic.HeaderID = Header.ID",null);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            topics.add(new Topic(cursor.getString(cursor.getColumnIndex("Header")),cursor.getString(cursor.getColumnIndex("Topic"))));
+            topics.add(new Topic(cursor.getString(cursor.getColumnIndex("HeaderString")),cursor.getString(cursor.getColumnIndex("TopicString"))));
         }
         helper.close();
         cursor.close();

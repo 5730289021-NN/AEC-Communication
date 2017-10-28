@@ -30,7 +30,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, 1);
-        targetPath = context.getDatabasePath(DB_NAME).getPath() + DB_NAME;
+        this.context = context;
+        targetPath = context.getDatabasePath(DB_NAME).getPath();
     }
 
     private boolean isDatabaseAvailable() {

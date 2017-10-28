@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="ContentDescription">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:id="@+id/scrollView"
+        android:layout_gravity="center_horizontal"
+
+        android:layout_above="@+id/speedLayout"
+        android:layout_alignParentTop="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:paddingBottom="48dp"
+            android:orientation="vertical"
+            android:id="@+id/textLayout"
+            >
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/initialTag"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/initializing"
+        android:textSize="30sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/playImageButton"
+        android:id="@+id/pitchLayout">
+        <TextView
+            android:layout_weight="11"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/pitch"
+            />
+        <TextView
+            android:layout_weight="9"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/normal"
+            android:id="@+id/pitchTextView"/>
+        <SeekBar
+            android:layout_weight="80"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/pitchSeekBar"
+            android:progress="50"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/pitchLayout"
+        android:id="@id/speedLayout"
+        >
+        <TextView
+            android:layout_weight="11"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/speed"
+            />
+        <TextView
+            android:layout_weight="9"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/normal"
+            android:id="@+id/speedTextView"/>
+        <SeekBar
+            android:layout_weight="80"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/speedSeekBar"
+            android:progress="50"/>
+    </LinearLayout>
+
+
+
+    <ImageButton
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:background="@drawable/backward"
+        android:id="@+id/backwardImageButton"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/playImageButton" />
+    <ImageButton
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:background="@drawable/play"
+        android:id="@id/playImageButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+    <ImageButton
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:background="@drawable/forward"
+        android:id="@+id/forwardImageButton"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/playImageButton" />
+
+</RelativeLayout>
