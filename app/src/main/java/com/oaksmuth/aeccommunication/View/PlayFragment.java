@@ -19,6 +19,7 @@ import com.oaksmuth.aeccommunication.Controller.ListHeader;
 import com.oaksmuth.aeccommunication.Controller.ListTopic;
 import com.oaksmuth.aeccommunication.Controller.TopicQuery;
 import com.oaksmuth.aeccommunication.Controller.TwoTextArrayAdapter;
+import com.oaksmuth.aeccommunication.Model.Conversation;
 import com.oaksmuth.aeccommunication.Model.Topic;
 import com.oaksmuth.aeccommunication.R;
 
@@ -28,12 +29,17 @@ import java.util.List;
 
 
 public class PlayFragment extends Fragment {
-    private OnFragmentInteractionListener mListener;
+    private OnTopicSelectedListener mCallback;
     private ListView listView;
     private ArrayList<Topic> topics;
 
     public PlayFragment() {
         // Required empty public constructor
+    }
+
+    public static PlayFragment newInstance() {
+        PlayFragment fragment = new PlayFragment();
+        return fragment;
     }
 
     @Override
@@ -63,18 +69,7 @@ public class PlayFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ConversationQuery conversationQuery = new ConversationQuery();
-                try {
-                    conversationQuery.queryByTopic(getContext(),topics.get(position));
-
-                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                    transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right, R.anim.enter_from_right, R.anim.exit_to_left);
-                    transaction.replace(R.id.content, new ConversationFragment());
-                    transaction.addToBackStack(null);
-                    transaction.commit();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                mCallback.onTopicSelected(topics.get(position));
             }
         });
 
@@ -101,28 +96,21 @@ public class PlayFragment extends Fragment {
         return items;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnTopicSelectedListener) {
+            mCallback = (OnTopicSelectedListener) context;
+            Toast.makeText(context,"Play",Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getContext(),"Play",Toast.LENGTH_SHORT).show();
-
+            Toast.makeText(context,"Not an instance of MainActivity",Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        mCallback = null;
     }
 
     /**
@@ -135,8 +123,8 @@ public class PlayFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnTopicSelectedListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onTopicSelected(Topic topic);
     }
 }

@@ -26,8 +26,7 @@ public class ListTopic implements Item{
     public View getView(LayoutInflater inflater, View convertView) {
         View view;
         if (convertView == null) {
-            view = (View) inflater.inflate(R.layout.list_topic, null);
-            // Do some initialization
+            view = inflater.inflate(R.layout.list_topic, null);
         } else {
             view = convertView;
         }

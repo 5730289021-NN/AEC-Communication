@@ -9,9 +9,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.oaksmuth.aeccommunication.Model.Topic;
 import com.oaksmuth.aeccommunication.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PlayFragment.OnTopicSelectedListener{
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -23,13 +24,13 @@ public class MainActivity extends AppCompatActivity {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    fragmentTransaction.replace(R.id.content, new PlayFragment()).commit();
+                    fragmentTransaction.replace(R.id.content, PlayFragment.newInstance()).commit();
                     return true;
                 case R.id.navigation_dashboard:
-                    fragmentTransaction.replace(R.id.content, new TalkFragment()).commit();
+                    fragmentTransaction.replace(R.id.content, TalkFragment.newInstance()).commit();
                     return true;
                 case R.id.navigation_notifications:
-                    fragmentTransaction.replace(R.id.content, new TeachFragment()).commit();
+                    fragmentTransaction.replace(R.id.content, TeachFragment.newInstance()).commit();
                     return true;
             }
             return false;
@@ -51,4 +52,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onTopicSelected(Topic topic) {
+        QAFragment qaFragment = QAFragment.newInstance();
+        qaFragment.setTopic(topic);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.content, qaFragment).commit();
+
+    }
 }

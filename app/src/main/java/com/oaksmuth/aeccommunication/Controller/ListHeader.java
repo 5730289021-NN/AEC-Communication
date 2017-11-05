@@ -27,15 +27,12 @@ public class ListHeader implements Item{
     public View getView(LayoutInflater inflater, View convertView) {
         View view;
         if (convertView == null) {
-            view = (View) inflater.inflate(R.layout.list_header, null);
-            // Do some initialization
+            view = inflater.inflate(R.layout.list_header, null);
         } else {
             view = convertView;
         }
-
         TextView text = (TextView) view.findViewById(R.id.separator);
         text.setText(headerTitle);
-
         return view;
     }
 }

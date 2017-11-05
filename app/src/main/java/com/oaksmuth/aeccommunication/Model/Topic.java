@@ -15,6 +15,14 @@ public class Topic {
         this.topic = topic;
     }
 
+    public boolean equals(Topic topic){
+        if(this.getHeader() == topic.getHeader() && this.getTopic() == this.getTopic())
+        {
+            return true;
+        }
+        return false;
+    }
+
     public String getHeader() {
         return header;
     }
