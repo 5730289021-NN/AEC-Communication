@@ -10,6 +10,6 @@
     <string name="sample">sample</string>
     <string name="initializing">Initializing...</string>
     <string name="pitch">Pitch</string>
-    <string name="normal">0.00</string>
+    <string name="normal">1.00</string>
     <string name="speed">Speed</string>
 </resources>

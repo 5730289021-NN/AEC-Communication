@@ -127,25 +127,24 @@ public class QAFragment extends Fragment implements View.OnClickListener,SeekBar
                 Log.i("onClick", "Play Clicked");
                 isPlaying = !isPlaying;
                 if(isPlaying) {
-                    if(playTTSTask.getStatus() != AsyncTask.Status.RUNNING) playTTSTask.execute();
                     playButton.setImageResource(R.drawable.pause);
                 }
                 else {
                     tts.stop();
-                    changeToItsState();
+                    //changeToItsState();
                     playButton.setImageResource(R.drawable.play);
                 }
             }
             case R.id.backwardImageButton:
             {
-                changeToItsState();
+                //changeToItsState();
                 playingAt--;
                 isQuestion = true;
                 tts.stop();
             }
             case R.id.forwardImageButton:
             {
-                changeToItsState();
+                //changeToItsState();
                 playingAt++;
                 isQuestion = true;
                 tts.stop();
@@ -183,6 +182,7 @@ public class QAFragment extends Fragment implements View.OnClickListener,SeekBar
                 }
             }
             initialTextView.setVisibility(View.INVISIBLE);
+            playTTSTask.execute();
         }
     }
 
@@ -191,25 +191,30 @@ public class QAFragment extends Fragment implements View.OnClickListener,SeekBar
         @Override
         protected Void doInBackground(Void... voids) {
             Log.i("Do In Background", "Initiated");
-            while(isPlaying && !tts.isSpeaking()) {
+            while (true) {
                 //On New Conversation
                 try {
                     Thread.sleep(500);
+                    Log.i("isQuestion,playingAt",String.valueOf(isQuestion) + String.valueOf(playingAt));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if (isQuestion) {
-                    Log.i("Do In Background", "isPlaying & !tts.isSpeaking & isQuestion");
-                    tts.speak(conversations.get(playingAt).getQuestion(), TextToSpeech.QUEUE_FLUSH, null);
-                    publishProgress(conversations.get(playingAt).getQuestion());
-                } else {
-                    Log.i("Do In Background", "isPlaying & !tts.isSpeaking & !isQuestion");
-                    tts.speak(conversations.get(playingAt).getAnswer(), TextToSpeech.QUEUE_FLUSH, null);
-                    publishProgress(conversations.get(playingAt).getAnswer());
+                if (isPlaying && !tts.isSpeaking()) {
+                    if (playingAt == conversations.size()) break;
+                    if (isQuestion) {
+                        Log.i("Do In Background", "isPlaying & !tts.isSpeaking & isQuestion");
+                        tts.speak(conversations.get(playingAt).getQuestion(), TextToSpeech.QUEUE_FLUSH, null);
+                        publishProgress(conversations.get(playingAt).getQuestion());
+                    } else {
+                        Log.i("Do In Background", "isPlaying & !tts.isSpeaking & !isQuestion");
+                        tts.speak(conversations.get(playingAt).getAnswer(), TextToSpeech.QUEUE_FLUSH, null);
+                        publishProgress(conversations.get(playingAt).getAnswer());
+                    }
                 }
             }
             return null;
         }
+
 
         @Override
         protected void onProgressUpdate(String... values) {
