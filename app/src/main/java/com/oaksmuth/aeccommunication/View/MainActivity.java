@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements PlayFragment.OnTo
         qaFragment.setTopic(topic);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.content, qaFragment).commit();
         fragmentTransaction.addToBackStack(backState);
+        fragmentTransaction.replace(R.id.content, qaFragment).commit();
     }
 }

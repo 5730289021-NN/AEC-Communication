@@ -29,12 +29,12 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 
-public class QAFragment extends Fragment {
+public class QAFragment extends Fragment implements View.OnClickListener,SeekBar.OnSeekBarChangeListener,TextToSpeech.OnInitListener{
 
     private Topic topic;
     private ArrayList<Conversation> conversations;
     private TextToSpeech tts;
-    private DecimalFormat df;
+    private DecimalFormat df = new DecimalFormat("0.00");
 
     private TextView initialTextView;
     private TextView speedTextView;
@@ -67,8 +67,8 @@ public class QAFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         View rootView = inflater.inflate(R.layout.fragment_qa, container, false);
         initialTextView = (TextView) rootView.findViewById(R.id.initialTag);
         speedTextView = (TextView) rootView.findViewById(R.id.speedTextView);
@@ -77,93 +77,18 @@ public class QAFragment extends Fragment {
         pitchSeekBar = (SeekBar) rootView.findViewById(R.id.pitchSeekBar);
         scrollView = (ScrollView) rootView.findViewById(R.id.scrollView);
         conversationHolder = (LinearLayout) rootView.findViewById(R.id.conversationHolder);
-
         playButton = (ImageButton) rootView.findViewById(R.id.playImageButton);
         backwardButton = (ImageButton) rootView.findViewById(R.id.backwardImageButton);
         forwardButton = (ImageButton) rootView.findViewById(R.id.forwardImageButton);
-
         playTTSTask = new PlayTTSTask();
-
-
-        df = new DecimalFormat("0.00");
-        tts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status == TextToSpeech.SUCCESS) {
-                    tts.setLanguage(Locale.ENGLISH);
-                    tts.speak("Category is " + topic.getHeader() + "and topic is " + topic.getTopic(), TextToSpeech.QUEUE_FLUSH, null);
-                    while(!tts.isSpeaking()) {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    initialTextView.setVisibility(View.INVISIBLE);
-                }
-            }
-        });
-
-
-        speedSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                float speedValue = Float.parseFloat(df.format((float) (Math.pow(2, (double) progress/50)/2)));
-                speedTextView.setText(String.valueOf(speedValue));
-                tts.setSpeechRate(speedValue);
-            }
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-
-        pitchSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                float pitchValue = Float.parseFloat(df.format((float) (Math.pow(2, (double) progress/50)/2)));
-                pitchTextView.setText(String.valueOf(pitchValue));
-                tts.setPitch(pitchValue);
-            }
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isPlaying = !isPlaying;
-                if(isPlaying) {
-                    if(playTTSTask.getStatus() != AsyncTask.Status.RUNNING) playTTSTask.execute();
-                    playButton.setImageResource(R.drawable.pause);
-                }
-                else {
-                    tts.stop();
-                    changeToItsState();
-                    playButton.setImageResource(R.drawable.play);
-                }
-            }
-        });
-
-        backwardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeToItsState();
-                playingAt--;
-                isQuestion = true;
-                tts.stop();
-            }
-        });
-
-        forwardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeToItsState();
-                playingAt++;
-                isQuestion = true;
-                tts.stop();
-            }
-        });
-
-
+        tts = new TextToSpeech(getContext(), this);
+        speedSeekBar.setOnSeekBarChangeListener(this);
+        speedSeekBar.setTag("Speed");
+        pitchSeekBar.setOnSeekBarChangeListener(this);
+        pitchSeekBar.setTag("Pitch");
+        playButton.setOnClickListener(this);
+        backwardButton.setOnClickListener(this);
+        forwardButton.setOnClickListener(this);
         try {
             conversations = new ConversationQuery().queryByTopic(getContext(), this.topic);
         } catch (IOException e) {
@@ -191,6 +116,74 @@ public class QAFragment extends Fragment {
 
     public void setTopic(Topic topic) {
         this.topic = topic;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId())
+        {
+            case R.id.playImageButton:
+            {
+                Log.i("onClick", "Play Clicked");
+                isPlaying = !isPlaying;
+                if(isPlaying) {
+                    if(playTTSTask.getStatus() != AsyncTask.Status.RUNNING) playTTSTask.execute();
+                    playButton.setImageResource(R.drawable.pause);
+                }
+                else {
+                    tts.stop();
+                    changeToItsState();
+                    playButton.setImageResource(R.drawable.play);
+                }
+            }
+            case R.id.backwardImageButton:
+            {
+                changeToItsState();
+                playingAt--;
+                isQuestion = true;
+                tts.stop();
+            }
+            case R.id.forwardImageButton:
+            {
+                changeToItsState();
+                playingAt++;
+                isQuestion = true;
+                tts.stop();
+            }
+        }
+    }
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        switch(seekBar.getTag().toString()) {
+            case "Pitch": {
+                float pitchValue = Float.parseFloat(df.format((float) (Math.pow(2, (double) progress / 50) / 2)));
+                pitchTextView.setText(String.valueOf(pitchValue));
+                tts.setPitch(pitchValue);
+            }
+            case "Speed": {
+                float speedValue = Float.parseFloat(df.format((float) (Math.pow(2, (double) progress/50)/2)));
+                speedTextView.setText(String.valueOf(speedValue));
+                tts.setSpeechRate(speedValue);
+            }
+        }
+    }
+    public void onStartTrackingTouch(SeekBar seekBar) {}
+    public void onStopTrackingTouch(SeekBar seekBar) {}
+    @Override
+    public void onInit(int status) {
+        if(status == TextToSpeech.SUCCESS) {
+            tts.setLanguage(Locale.ENGLISH);
+            tts.speak("Category is " + topic.getHeader() + "and topic is " + topic.getTopic(), TextToSpeech.QUEUE_FLUSH, null);
+            while(!tts.isSpeaking()) {
+                try {
+                    Thread.sleep(500);
+                    Log.i("TTS","waiting");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            initialTextView.setVisibility(View.INVISIBLE);
+        }
     }
 
     private class PlayTTSTask extends AsyncTask<Void, String, Void>
