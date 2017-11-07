@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -39,9 +40,11 @@ public class QAFragment extends Fragment {
     private SeekBar speedSeekBar;
     private SeekBar pitchSeekBar;
     private ScrollView scrollView;
+    private LinearLayout conversationHolder;
     private ImageButton playButton;
     private ImageButton backwardButton;
     private ImageButton forwardButton;
+
 
     private boolean isPlaying;
     private boolean isQuestion;
@@ -64,13 +67,15 @@ public class QAFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_conversation, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_qa, container, false);
         initialTextView = (TextView) rootView.findViewById(R.id.initialTag);
         speedTextView = (TextView) rootView.findViewById(R.id.speedTextView);
         pitchTextView = (TextView) rootView.findViewById(R.id.pitchTextView);
         speedSeekBar = (SeekBar) rootView.findViewById(R.id.speedSeekBar);
         pitchSeekBar = (SeekBar) rootView.findViewById(R.id.pitchSeekBar);
         scrollView = (ScrollView) rootView.findViewById(R.id.scrollView);
+        conversationHolder = (LinearLayout) rootView.findViewById(R.id.conversationHolder);
+
         playButton = (ImageButton) rootView.findViewById(R.id.playImageButton);
         backwardButton = (ImageButton) rootView.findViewById(R.id.backwardImageButton);
         forwardButton = (ImageButton) rootView.findViewById(R.id.forwardImageButton);
@@ -93,6 +98,8 @@ public class QAFragment extends Fragment {
                 }
             }
         });
+
+
 
         speedSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -122,7 +129,7 @@ public class QAFragment extends Fragment {
             e.printStackTrace();
         }
 
-        return inflater.inflate(R.layout.fragment_conversation, container, false);
+        return inflater.inflate(R.layout.fragment_qa, container, false);
     }
 
     @Override
@@ -146,6 +153,7 @@ public class QAFragment extends Fragment {
         protected Void doInBackground(ArrayList<Conversation>... conversations) {
             Log.i("Do In Background", "Initiated");
             while(isPlaying && !tts.isSpeaking()) {
+                //On New Conversation
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
@@ -167,25 +175,29 @@ public class QAFragment extends Fragment {
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
-
-            TextView textTextView = new TextView(getContext());
+            TextView newTextView = new TextView(getContext());
             if (isQuestion) {
-                textTextView.setText("Question\t" + (playingAt + 1) + "\t:\t" + values[0] + "\n");
+                String questionString = "Question\t" + (playingAt + 1) + "\t:\t" + values[0] + "\n";
+                newTextView.setText(questionString);
                 isQuestion = false;
             } else {
-                textTextView.setText("Answer\t" + (playingAt + 1) + "\t:\t" + values[0] + "\n");
+                String answerString = "Answer\t" + (playingAt + 1) + "\t:\t" + values[0] + "\n";
+                newTextView.setText(answerString);
                 isQuestion = true;
                 playingAt++;
+                if(playingAt == conversations.size())
+                {
+                    isPlaying = false;
+                }
             }
             scrollView.fullScroll(View.FOCUS_DOWN);
-            textTextView.setTextColor(Color.BLACK);
-            textLayout.addView(textTextView);
+            newTextView.setTextColor(Color.BLACK);
+            conversationHolder.addView(newTextView);
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            isFinished = true;
             playButton.setBackgroundResource(R.drawable.play);
             isPlaying = false;
         }
