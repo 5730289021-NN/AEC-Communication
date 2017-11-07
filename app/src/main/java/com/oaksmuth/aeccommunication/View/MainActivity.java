@@ -14,8 +14,12 @@ import com.oaksmuth.aeccommunication.Model.Topic;
 import com.oaksmuth.aeccommunication.R;
 
 public class MainActivity extends AppCompatActivity implements PlayFragment.OnTopicSelectedListener{
+    private  static final int HOME = 27;
+    private  static final int DASHBOARD = 566;
+    private  static final int NOTIFICATION = 901;
 
     private String backState;
+    private short screenState;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -26,16 +30,23 @@ public class MainActivity extends AppCompatActivity implements PlayFragment.OnTo
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    Log.i("debug","Hello");
-                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left);
+                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_right);
                     fragmentTransaction.replace(R.id.content, PlayFragment.newInstance()).commit();
-
+                    screenState=HOME;
                     return true;
                 case R.id.navigation_dashboard:
+                    if(screenState<DASHBOARD){
+                        fragmentTransaction.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left);
+                    }else{
+                        fragmentTransaction.setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_right);
+                    }
                     fragmentTransaction.replace(R.id.content, TalkFragment.newInstance()).commit();
+                    screenState=DASHBOARD;
                     return true;
                 case R.id.navigation_notifications:
+                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left);
                     fragmentTransaction.replace(R.id.content, TeachFragment.newInstance()).commit();
+                    screenState=NOTIFICATION;
                     return true;
             }
 
