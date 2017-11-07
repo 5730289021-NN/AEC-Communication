@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.oaksmuth.aeccommunication.Model.Topic;
@@ -25,7 +26,10 @@ public class MainActivity extends AppCompatActivity implements PlayFragment.OnTo
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
+                    Log.i("debug","Hello");
+                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left);
                     fragmentTransaction.replace(R.id.content, PlayFragment.newInstance()).commit();
+
                     return true;
                 case R.id.navigation_dashboard:
                     fragmentTransaction.replace(R.id.content, TalkFragment.newInstance()).commit();
