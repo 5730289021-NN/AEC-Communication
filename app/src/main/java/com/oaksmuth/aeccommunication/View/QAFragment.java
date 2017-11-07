@@ -25,7 +25,9 @@ import com.oaksmuth.aeccommunication.R;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
 
 public class QAFragment extends Fragment {
 
@@ -45,10 +47,11 @@ public class QAFragment extends Fragment {
     private ImageButton backwardButton;
     private ImageButton forwardButton;
 
-
-    private boolean isPlaying;
-    private boolean isQuestion;
-    private int playingAt;
+    private PlayTTSTask playTTSTask;
+    private boolean isPlaying = true;
+    private boolean isQuestion = true;
+    private int playingAt = 0;
+    private boolean repeatBack = false;
 
     public QAFragment() {
         // Required empty public constructor
@@ -79,6 +82,9 @@ public class QAFragment extends Fragment {
         playButton = (ImageButton) rootView.findViewById(R.id.playImageButton);
         backwardButton = (ImageButton) rootView.findViewById(R.id.backwardImageButton);
         forwardButton = (ImageButton) rootView.findViewById(R.id.forwardImageButton);
+
+        playTTSTask = new PlayTTSTask();
+        playTTSTask.execute();
 
         df = new DecimalFormat("0.00");
         tts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
@@ -123,6 +129,42 @@ public class QAFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isPlaying = !isPlaying;
+                if(isPlaying) {
+                    playButton.setImageResource(R.drawable.pause);
+                }
+                else {
+                    tts.stop();
+                    changeToNormalState();
+                    playButton.setImageResource(R.drawable.play);
+                }
+            }
+        });
+
+        backwardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeToNormalState();
+                playingAt--;
+                isQuestion = true;
+                tts.stop();
+            }
+        });
+
+        forwardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeToNormalState();
+                playingAt++;
+                isQuestion = true;
+                tts.stop();
+            }
+        });
+
+
         try {
             conversations = new ConversationQuery().queryByTopic(getContext(), this.topic);
         } catch (IOException e) {
@@ -130,6 +172,12 @@ public class QAFragment extends Fragment {
         }
 
         return inflater.inflate(R.layout.fragment_qa, container, false);
+    }
+
+    private void changeToNormalState()
+    {
+        isQuestion = !isQuestion;
+        playingAt = isQuestion?playingAt-1:playingAt;
     }
 
     @Override
@@ -147,10 +195,10 @@ public class QAFragment extends Fragment {
         this.topic = topic;
     }
 
-    private class PlayTTSTask extends AsyncTask<ArrayList<Conversation>, String, Void>
+    private class PlayTTSTask extends AsyncTask<Void, String, Void>
     {
         @Override
-        protected Void doInBackground(ArrayList<Conversation>... conversations) {
+        protected Void doInBackground(Void... voids) {
             Log.i("Do In Background", "Initiated");
             while(isPlaying && !tts.isSpeaking()) {
                 //On New Conversation
@@ -161,12 +209,12 @@ public class QAFragment extends Fragment {
                 }
                 if (isQuestion) {
                     Log.i("Do In Background", "isPlaying & !tts.isSpeaking & isQuestion");
-                    tts.speak(conversations[0].get(playingAt).getQuestion(), TextToSpeech.QUEUE_FLUSH, null);
-                    publishProgress(conversations[0].get(playingAt).getQuestion());
+                    tts.speak(conversations.get(playingAt).getQuestion(), TextToSpeech.QUEUE_FLUSH, null);
+                    publishProgress(conversations.get(playingAt).getQuestion());
                 } else {
                     Log.i("Do In Background", "isPlaying & !tts.isSpeaking & !isQuestion");
-                    tts.speak(conversations[0].get(playingAt).getAnswer(), TextToSpeech.QUEUE_FLUSH, null);
-                    publishProgress(conversations[0].get(playingAt).getAnswer());
+                    tts.speak(conversations.get(playingAt).getAnswer(), TextToSpeech.QUEUE_FLUSH, null);
+                    publishProgress(conversations.get(playingAt).getAnswer());
                 }
             }
             return null;
