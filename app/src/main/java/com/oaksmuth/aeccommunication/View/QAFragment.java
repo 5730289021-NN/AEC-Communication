@@ -48,10 +48,9 @@ public class QAFragment extends Fragment {
     private ImageButton forwardButton;
 
     private PlayTTSTask playTTSTask;
-    private boolean isPlaying = true;
+    private boolean isPlaying = false;
     private boolean isQuestion = true;
     private int playingAt = 0;
-    private boolean repeatBack = false;
 
     public QAFragment() {
         // Required empty public constructor
@@ -84,7 +83,7 @@ public class QAFragment extends Fragment {
         forwardButton = (ImageButton) rootView.findViewById(R.id.forwardImageButton);
 
         playTTSTask = new PlayTTSTask();
-        playTTSTask.execute();
+
 
         df = new DecimalFormat("0.00");
         tts = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
@@ -104,7 +103,6 @@ public class QAFragment extends Fragment {
                 }
             }
         });
-
 
 
         speedSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -134,11 +132,12 @@ public class QAFragment extends Fragment {
             public void onClick(View v) {
                 isPlaying = !isPlaying;
                 if(isPlaying) {
+                    if(playTTSTask.getStatus() != AsyncTask.Status.RUNNING) playTTSTask.execute();
                     playButton.setImageResource(R.drawable.pause);
                 }
                 else {
                     tts.stop();
-                    changeToNormalState();
+                    changeToItsState();
                     playButton.setImageResource(R.drawable.play);
                 }
             }
@@ -147,7 +146,7 @@ public class QAFragment extends Fragment {
         backwardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeToNormalState();
+                changeToItsState();
                 playingAt--;
                 isQuestion = true;
                 tts.stop();
@@ -157,7 +156,7 @@ public class QAFragment extends Fragment {
         forwardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeToNormalState();
+                changeToItsState();
                 playingAt++;
                 isQuestion = true;
                 tts.stop();
@@ -174,7 +173,7 @@ public class QAFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_qa, container, false);
     }
 
-    private void changeToNormalState()
+    private void changeToItsState()
     {
         isQuestion = !isQuestion;
         playingAt = isQuestion?playingAt-1:playingAt;
@@ -183,7 +182,6 @@ public class QAFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Toast.makeText(context, "Conversation Fragment", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -248,6 +246,7 @@ public class QAFragment extends Fragment {
             super.onPostExecute(aVoid);
             playButton.setBackgroundResource(R.drawable.play);
             isPlaying = false;
+            playingAt = 0;
         }
     }
 

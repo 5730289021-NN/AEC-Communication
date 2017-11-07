@@ -14,6 +14,7 @@ import com.oaksmuth.aeccommunication.R;
 
 public class MainActivity extends AppCompatActivity implements PlayFragment.OnTopicSelectedListener{
 
+    private String backState;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements PlayFragment.OnTo
                     fragmentTransaction.replace(R.id.content, TeachFragment.newInstance()).commit();
                     return true;
             }
+
             return false;
         }
 
@@ -48,8 +50,9 @@ public class MainActivity extends AppCompatActivity implements PlayFragment.OnTo
         //To place content with Play
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.content, new PlayFragment()).commit();
-
+        PlayFragment playFragment = new PlayFragment();
+        backState = playFragment.getClass().getName();
+        fragmentTransaction.replace(R.id.content, playFragment).commit();
     }
 
     @Override
@@ -59,6 +62,6 @@ public class MainActivity extends AppCompatActivity implements PlayFragment.OnTo
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.content, qaFragment).commit();
-
+        fragmentTransaction.addToBackStack(backState);
     }
 }
