@@ -95,7 +95,7 @@ public class QAFragment extends Fragment implements View.OnClickListener,SeekBar
             e.printStackTrace();
         }
 
-        return inflater.inflate(R.layout.fragment_qa, container, false);
+        return rootView;
     }
 
     private void changeToItsState()
