@@ -8,13 +8,13 @@
     android:orientation="vertical"
     tools:context="com.oaksmuth.aeccommunication.View.MainActivity">
 
-    <FrameLayout
+    <android.support.v4.view.ViewPager
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-    </FrameLayout>
+    </android.support.v4.view.ViewPager>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
