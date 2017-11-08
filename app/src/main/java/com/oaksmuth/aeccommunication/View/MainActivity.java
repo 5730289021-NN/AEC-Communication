@@ -43,23 +43,26 @@ public class MainActivity extends AppCompatActivity implements PlayFragment.OnTo
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_right);
-                    fragmentTransaction.replace(R.id.content, PlayFragment.newInstance()).commit();
-                    screenState=HOME;
+//                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_right);
+//                    fragmentTransaction.replace(R.id.content, PlayFragment.newInstance()).commit();
+//                    screenState=HOME;
+                    viewPager.setCurrentItem(0);
                     return true;
                 case R.id.navigation_dashboard:
-                    if(screenState<DASHBOARD){
-                        fragmentTransaction.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left);
-                    }else{
-                        fragmentTransaction.setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_right);
-                    }
-                    fragmentTransaction.replace(R.id.content, TalkFragment.newInstance()).commit();
-                    screenState=DASHBOARD;
+//                    if(screenState<DASHBOARD){
+//                        fragmentTransaction.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left);
+//                    }else{
+//                        fragmentTransaction.setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_right);
+//                    }
+//                    fragmentTransaction.replace(R.id.content, TalkFragment.newInstance()).commit();
+//                    screenState=DASHBOARD;
+                    viewPager.setCurrentItem(1);
                     return true;
                 case R.id.navigation_notifications:
-                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left);
-                    fragmentTransaction.replace(R.id.content, TeachFragment.newInstance()).commit();
-                    screenState=NOTIFICATION;
+//                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left);
+//                    fragmentTransaction.replace(R.id.content, TeachFragment.newInstance()).commit();
+//                    screenState=NOTIFICATION;
+                    viewPager.setCurrentItem(2);
                     return true;
             }
 
