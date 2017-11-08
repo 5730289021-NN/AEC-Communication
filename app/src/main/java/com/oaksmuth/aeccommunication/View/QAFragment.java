@@ -2,7 +2,6 @@ package com.oaksmuth.aeccommunication.View;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.Fragment;
@@ -15,9 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.oaksmuth.aeccommunication.Controller.ConversationQuery;
+import com.oaksmuth.aeccommunication.Controller.SpeakingNotifier;
 import com.oaksmuth.aeccommunication.Model.Conversation;
 import com.oaksmuth.aeccommunication.Model.Topic;
 import com.oaksmuth.aeccommunication.R;
@@ -25,15 +24,15 @@ import com.oaksmuth.aeccommunication.R;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
-import java.util.Timer;
 
-public class QAFragment extends Fragment implements View.OnClickListener,SeekBar.OnSeekBarChangeListener,TextToSpeech.OnInitListener{
+public class QAFragment extends Fragment implements SpeakingNotifier.OnSpeakingFinishedListener, View.OnClickListener,SeekBar.OnSeekBarChangeListener,TextToSpeech.OnInitListener{
 
     private Topic topic;
     private ArrayList<Conversation> conversations;
     private TextToSpeech tts;
+    private SpeakingNotifier fsn;
     private DecimalFormat df = new DecimalFormat("0.00");
 
     private TextView initialTextView;
@@ -47,18 +46,17 @@ public class QAFragment extends Fragment implements View.OnClickListener,SeekBar
     private ImageButton backwardButton;
     private ImageButton forwardButton;
 
-    private PlayTTSTask playTTSTask;
     private boolean isPlaying = false;
     private boolean isQuestion = true;
     private int playingAt = 0;
+    private String toTalk;
 
     public QAFragment() {
         // Required empty public constructor
     }
 
     public static QAFragment newInstance() {
-        QAFragment fragment = new QAFragment();
-        return fragment;
+        return new QAFragment();
     }
 
     @Override
@@ -80,8 +78,9 @@ public class QAFragment extends Fragment implements View.OnClickListener,SeekBar
         playButton = (ImageButton) rootView.findViewById(R.id.playImageButton);
         backwardButton = (ImageButton) rootView.findViewById(R.id.backwardImageButton);
         forwardButton = (ImageButton) rootView.findViewById(R.id.forwardImageButton);
-        playTTSTask = new PlayTTSTask();
         tts = new TextToSpeech(getContext(), this);
+        fsn = new SpeakingNotifier(this);
+        tts.setOnUtteranceProgressListener(fsn);
         speedSeekBar.setOnSeekBarChangeListener(this);
         speedSeekBar.setTag("Speed");
         pitchSeekBar.setOnSeekBarChangeListener(this);
@@ -96,12 +95,6 @@ public class QAFragment extends Fragment implements View.OnClickListener,SeekBar
         }
 
         return rootView;
-    }
-
-    private void changeToItsState()
-    {
-        isQuestion = !isQuestion;
-        playingAt = isQuestion?playingAt-1:playingAt;
     }
 
     @Override
@@ -124,30 +117,42 @@ public class QAFragment extends Fragment implements View.OnClickListener,SeekBar
         {
             case R.id.playImageButton:
             {
-                Log.i("onClick", "Play Clicked");
                 isPlaying = !isPlaying;
-                if(isPlaying) {
-                    playButton.setImageResource(R.drawable.pause);
+                if(isPlaying)
+                {
+                    playButton.setBackgroundResource(R.drawable.pause);
+                    Log.i("onClick:Play:playingAt",String.valueOf(playingAt));
+                    Log.i("onClick:Play:isPlaying",String.valueOf(isPlaying));
+                    speakWithViewAdd();
                 }
-                else {
+                else
+                {
+                    playButton.setBackgroundResource(R.drawable.play);
                     tts.stop();
-                    //changeToItsState();
-                    playButton.setImageResource(R.drawable.play);
+                    Log.i("onClick:Pause:playingAt",String.valueOf(playingAt));
+                    Log.i("onClick:Pause:isPlaying",String.valueOf(isPlaying));
                 }
+                break;
             }
             case R.id.backwardImageButton:
             {
-                //changeToItsState();
-                playingAt--;
-                isQuestion = true;
                 tts.stop();
+                isQuestion = true;
+                playingAt--;
+                Log.i("onClick:Back:playingAt",String.valueOf(playingAt));
+                Log.i("onClick:Back:isPlaying",String.valueOf(isPlaying));
+                if(isPlaying) speakWithViewAdd();
+                break;
             }
             case R.id.forwardImageButton:
             {
-                //changeToItsState();
-                playingAt++;
-                isQuestion = true;
                 tts.stop();
+                isQuestion = true;
+                playingAt++;
+                Log.i("onClick:Next:playingAt",String.valueOf(playingAt));
+                Log.i("onClick:Next:isPlaying",String.valueOf(isPlaying));
+                if(isPlaying) speakWithViewAdd();
+                break;
             }
         }
     }
@@ -182,70 +187,38 @@ public class QAFragment extends Fragment implements View.OnClickListener,SeekBar
                 }
             }
             initialTextView.setVisibility(View.INVISIBLE);
-            playTTSTask.execute();
         }
     }
 
-    private class PlayTTSTask extends AsyncTask<Void, String, Void>
-    {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            Log.i("Do In Background", "Initiated");
-            while (true) {
-                //On New Conversation
-                try {
-                    Thread.sleep(500);
-                    Log.i("isQuestion,playingAt",String.valueOf(isQuestion) + String.valueOf(playingAt));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (isPlaying && !tts.isSpeaking()) {
-                    if (playingAt == conversations.size()) break;
-                    if (isQuestion) {
-                        Log.i("Do In Background", "isPlaying & !tts.isSpeaking & isQuestion");
-                        tts.speak(conversations.get(playingAt).getQuestion(), TextToSpeech.QUEUE_FLUSH, null);
-                        publishProgress(conversations.get(playingAt).getQuestion());
-                    } else {
-                        Log.i("Do In Background", "isPlaying & !tts.isSpeaking & !isQuestion");
-                        tts.speak(conversations.get(playingAt).getAnswer(), TextToSpeech.QUEUE_FLUSH, null);
-                        publishProgress(conversations.get(playingAt).getAnswer());
-                    }
-                }
-            }
-            return null;
-        }
-
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            TextView newTextView = new TextView(getContext());
-            if (isQuestion) {
-                String questionString = "Question\t" + (playingAt + 1) + "\t:\t" + values[0] + "\n";
-                newTextView.setText(questionString);
-                isQuestion = false;
-            } else {
-                String answerString = "Answer\t" + (playingAt + 1) + "\t:\t" + values[0] + "\n";
-                newTextView.setText(answerString);
-                isQuestion = true;
-                playingAt++;
-                if(playingAt == conversations.size())
-                {
-                    isPlaying = false;
-                }
-            }
-            scrollView.fullScroll(View.FOCUS_DOWN);
-            newTextView.setTextColor(Color.BLACK);
-            conversationHolder.addView(newTextView);
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+    public void onSpeakingFinished() {
+        isQuestion = !isQuestion;
+        if(isQuestion) playingAt++;
+        if(playingAt == conversations.size())
+        {
+            playingAt = 0;
             playButton.setBackgroundResource(R.drawable.play);
             isPlaying = false;
-            playingAt = 0;
+        }else
+        {
+            speakWithViewAdd();
         }
     }
 
+    public void speakWithViewAdd(){
+        HashMap<String, String> map = new HashMap<>();
+        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
+        String QA = isQuestion ? "Question" : "Answer";
+        toTalk = QA + " \t" + String.valueOf(playingAt + 1) + "\t:\t" + conversations.get(playingAt).getQA(isQuestion);
+        tts.speak(toTalk, TextToSpeech.QUEUE_FLUSH, map);
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView tv = new TextView(getContext());
+                scrollView.fullScroll(View.FOCUS_DOWN);
+                tv.setTextColor(Color.BLACK);
+                tv.setText(toTalk);
+                conversationHolder.addView(tv);
+            }
+        });
+    }
 }

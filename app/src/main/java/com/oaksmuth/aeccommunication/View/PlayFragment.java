@@ -1,11 +1,9 @@
 package com.oaksmuth.aeccommunication.View;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +11,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.oaksmuth.aeccommunication.Controller.ConversationQuery;
 import com.oaksmuth.aeccommunication.Controller.Item;
-import com.oaksmuth.aeccommunication.Controller.ListHeader;
-import com.oaksmuth.aeccommunication.Controller.ListTopic;
+import com.oaksmuth.aeccommunication.Model.HeaderView;
+import com.oaksmuth.aeccommunication.Model.TopicView;
 import com.oaksmuth.aeccommunication.Controller.TopicQuery;
 import com.oaksmuth.aeccommunication.Controller.TwoTextArrayAdapter;
-import com.oaksmuth.aeccommunication.Model.Conversation;
 import com.oaksmuth.aeccommunication.Model.Topic;
 import com.oaksmuth.aeccommunication.R;
 
@@ -32,14 +28,14 @@ public class PlayFragment extends Fragment {
     private OnTopicSelectedListener mCallback;
     private ListView listView;
     private ArrayList<Topic> topics;
+    private List<Item> items;
 
     public PlayFragment() {
         // Required empty public constructor
     }
 
     public static PlayFragment newInstance() {
-        PlayFragment fragment = new PlayFragment();
-        return fragment;
+        return new PlayFragment();
     }
 
     @Override
@@ -62,14 +58,26 @@ public class PlayFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        List<Item> items = topicsToViews(topics);
+        items = topicsToViews(topics);
         TwoTextArrayAdapter adapter = new TwoTextArrayAdapter(getContext(), items);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mCallback.onTopicSelected(topics.get(position));
+                if(items.get(position).getClass() == TopicView.class)
+                {
+                    String header = null;
+                    for(int r = position ; r >= 0 ; r--)
+                    {
+                        if(items.get(r).getClass() == HeaderView.class)
+                        {
+                            header = items.get(r).toString();
+                            break;
+                        }
+                    }
+                    mCallback.onTopicSelected(new Topic(header,items.get(position).toString()));
+                }
             }
         });
 
@@ -86,9 +94,9 @@ public class PlayFragment extends Fragment {
             if(newHeader)
             {
                 tempHeader = topics.get(i).getHeader();
-                items.add(new ListHeader(tempHeader));
+                items.add(new HeaderView(tempHeader));
             }
-            items.add(new ListTopic(topics.get(i).getTopic()));
+            items.add(new TopicView(topics.get(i).getTopic()));
             if(i == topics.size() - 1) break;
             i++;
             newHeader = !tempHeader.equals(topics.get(i).getHeader());
@@ -124,7 +132,6 @@ public class PlayFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnTopicSelectedListener {
-        // TODO: Update argument type and name
         void onTopicSelected(Topic topic);
     }
 }

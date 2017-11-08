@@ -1,21 +1,23 @@
-package com.oaksmuth.aeccommunication.Controller;
+package com.oaksmuth.aeccommunication.Model;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import com.oaksmuth.aeccommunication.Controller.Item;
+import com.oaksmuth.aeccommunication.Controller.TwoTextArrayAdapter;
 import com.oaksmuth.aeccommunication.R;
 
 /**
- * Created by Oak on 10/27/2017.
+ * Created by Norawit Nangsue on 10/27/2017.
  */
 
-public class ListHeader implements Item{
+public class HeaderView implements Item {
 
-    private final String headerTitle;
+    private final String header;
 
-    public ListHeader(String headerTitle) {
-        this.headerTitle = headerTitle;
+    public HeaderView(String header) {
+        this.header = header;
     }
 
     @Override
@@ -32,7 +34,12 @@ public class ListHeader implements Item{
             view = convertView;
         }
         TextView text = (TextView) view.findViewById(R.id.separator);
-        text.setText(headerTitle);
+        text.setText(header);
         return view;
+    }
+
+    @Override
+    public String toString() {
+        return header;
     }
 }

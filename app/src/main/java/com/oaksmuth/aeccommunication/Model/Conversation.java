@@ -1,7 +1,8 @@
 package com.oaksmuth.aeccommunication.Model;
 
 /**
- * Created by noraw on 10/27/2017.
+ * Created by Norawit Nangsue on 10/27/2017.
+ * Conversation class consists of question and answer.
  */
 
 public class Conversation {
@@ -14,20 +15,10 @@ public class Conversation {
         this.answer = answer;
     }
 
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
+    public String getQA(boolean isQuestion)
+    {
+        if(isQuestion) return question;
+        else return answer;
     }
 
 }
