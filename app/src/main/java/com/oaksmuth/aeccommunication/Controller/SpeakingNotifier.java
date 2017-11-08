@@ -1,7 +1,6 @@
 package com.oaksmuth.aeccommunication.Controller;
 
 import android.speech.tts.UtteranceProgressListener;
-import android.support.v4.app.Fragment;
 
 import com.oaksmuth.aeccommunication.View.QAFragment;
 

@@ -3,7 +3,6 @@ package com.oaksmuth.aeccommunication.View;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.oaksmuth.aeccommunication.Controller.Item;
+import com.oaksmuth.aeccommunication.Model.Item;
 import com.oaksmuth.aeccommunication.Model.HeaderView;
 import com.oaksmuth.aeccommunication.Model.TopicView;
 import com.oaksmuth.aeccommunication.Controller.TopicQuery;

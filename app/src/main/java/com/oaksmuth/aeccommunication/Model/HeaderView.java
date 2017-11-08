@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.oaksmuth.aeccommunication.Controller.Item;
 import com.oaksmuth.aeccommunication.Controller.TwoTextArrayAdapter;
 import com.oaksmuth.aeccommunication.R;
 
