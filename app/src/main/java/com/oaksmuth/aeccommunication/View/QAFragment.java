@@ -16,6 +16,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.oaksmuth.aeccommunication.Controller.ConversationQuery;
+import com.oaksmuth.aeccommunication.Controller.SpeakerWithView;
 import com.oaksmuth.aeccommunication.Controller.SpeakingNotifier;
 import com.oaksmuth.aeccommunication.Model.Conversation;
 import com.oaksmuth.aeccommunication.Model.Topic;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class QAFragment extends Fragment implements SpeakingNotifier.OnSpeakingFinishedListener, View.OnClickListener,SeekBar.OnSeekBarChangeListener,TextToSpeech.OnInitListener{
+public class QAFragment extends Fragment implements SpeakingNotifier.OnSpeakingFinishedListener, View.OnClickListener,SeekBar.OnSeekBarChangeListener ,SpeakerWithView{
 
     private Topic topic;
     private ArrayList<Conversation> conversations;
@@ -123,7 +124,7 @@ public class QAFragment extends Fragment implements SpeakingNotifier.OnSpeakingF
                     playButton.setBackgroundResource(R.drawable.pause);
                     Log.i("onClick:Play:playingAt",String.valueOf(playingAt));
                     Log.i("onClick:Play:isPlaying",String.valueOf(isPlaying));
-                    speakWithViewAdd();
+                    onSpeakWithViewAdd(null);
                 }
                 else
                 {
@@ -141,7 +142,7 @@ public class QAFragment extends Fragment implements SpeakingNotifier.OnSpeakingF
                 playingAt--;
                 Log.i("onClick:Back:playingAt",String.valueOf(playingAt));
                 Log.i("onClick:Back:isPlaying",String.valueOf(isPlaying));
-                if(isPlaying) speakWithViewAdd();
+                if(isPlaying) onSpeakWithViewAdd(null);
                 break;
             }
             case R.id.forwardImageButton:
@@ -151,7 +152,7 @@ public class QAFragment extends Fragment implements SpeakingNotifier.OnSpeakingF
                 playingAt++;
                 Log.i("onClick:Next:playingAt",String.valueOf(playingAt));
                 Log.i("onClick:Next:isPlaying",String.valueOf(isPlaying));
-                if(isPlaying) speakWithViewAdd();
+                if(isPlaying) onSpeakWithViewAdd(null);
                 break;
             }
         }
@@ -200,11 +201,11 @@ public class QAFragment extends Fragment implements SpeakingNotifier.OnSpeakingF
             isPlaying = false;
         }else
         {
-            speakWithViewAdd();
+            onSpeakWithViewAdd(null);
         }
     }
 
-    public void speakWithViewAdd(){
+    public void onSpeakWithViewAdd(String sentence){
         HashMap<String, String> map = new HashMap<>();
         map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
         String QA = isQuestion ? "Question" : "Answer";

@@ -30,4 +30,17 @@ public class ConversationQuery {
     public void addConversation(Context context, Topic topic, Conversation conversation) throws IOException {
         //TODO
     }
+
+    public Conversation queryByQuestion(Context context, Conversation conversation) {
+        DatabaseHelper helper = new DatabaseHelper(context);
+        try {
+            helper.openDatabase();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Cursor cursor = helper.rawQuery("SELECT Answer FROM Conversation WHERE Question = ?",new String[] {conversation.normalizeQuestion().getQuestion()});
+        conversation.setAnswer(cursor.getString(cursor.getColumnIndex("Answer")));
+        return conversation;
+    }
+
 }

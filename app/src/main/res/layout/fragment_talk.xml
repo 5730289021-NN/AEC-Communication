@@ -11,7 +11,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/editText">
+        android:layout_above="@id/talkAskInput">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/ask"
-        android:id="@+id/askButton"
+        android:id="@+id/talkAskButton"
         android:layout_gravity="center_horizontal"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
@@ -36,9 +36,9 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
+        android:id="@+id/talkAskInput"
         android:hint="@string/you_can_hold_ask_button_to_speak"
-        android:layout_alignBottom="@id/askButton"
+        android:layout_alignBottom="@id/talkAskButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
