@@ -104,6 +104,15 @@ public class QAFragment extends Fragment implements SpeakingNotifier.OnSpeakingF
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
     }
@@ -211,6 +220,10 @@ public class QAFragment extends Fragment implements SpeakingNotifier.OnSpeakingF
         String QA = isQuestion ? "Question" : "Answer";
         toTalk = QA + " \t" + String.valueOf(playingAt + 1) + "\t:\t" + conversations.get(playingAt).getQA(isQuestion);
         tts.speak(toTalk, TextToSpeech.QUEUE_FLUSH, map);
+        onViewAdd(toTalk);
+    }
+
+    public void onViewAdd(String sentence){
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

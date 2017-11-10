@@ -21,6 +21,10 @@ public class Conversation {
         else return answer;
     }
 
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
     public String getQuestion() {
         return question;
     }
@@ -35,17 +39,14 @@ public class Conversation {
     //TODO
     public Conversation normalizeQuestion() {
         String question = this.getQuestion();
-        String cap = String.valueOf(question.charAt(0)).toUpperCase();
-        String[] ans = new String[1];
-        text = text.trim();
-        if(text.endsWith("?"))
+        question = question.substring(0, 1).toUpperCase() + question.substring(1);
+        if(question.endsWith("?"))
         {
-            text = text.substring(0,text.length() - 1);
+            question = question.substring(0,question.length() - 1);
         }
-
-        text = text.substring(1,text.length());
-        text = cap + text + " ?";
-        ans[0] = text;
-        return conversation;
+        question = question.trim() + " ?";
+        this.setQuestion(question);
+        return this;
     }
+
 }

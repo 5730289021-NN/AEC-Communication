@@ -22,7 +22,10 @@ import com.oaksmuth.aeccommunication.Controller.SpeakerWithView;
 import com.oaksmuth.aeccommunication.Model.Conversation;
 import com.oaksmuth.aeccommunication.R;
 
+import java.util.ArrayList;
 import java.util.Locale;
+
+import static android.app.Activity.RESULT_OK;
 
 public class TalkFragment extends Fragment implements SpeakerWithView {
 
@@ -59,15 +62,16 @@ public class TalkFragment extends Fragment implements SpeakerWithView {
 
         conversationQuery = new ConversationQuery();
 
+        tts = new TextToSpeech(getContext(),this);
+
         askButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String question = inputText.getText().toString();
-                question = Character.toUpperCase(question.charAt(0)) + question.substring(1);
-                //add question mark at the last
-                Toast.makeText(getContext(),question,Toast.LENGTH_LONG).show();
-                Conversation response = conversationQuery.queryByQuestion(getContext(),new Conversation(question,""));
-                onSpeakWithViewAdd(response.getAnswer());
+                Conversation conversation = new Conversation(question,"").normalizeQuestion();
+                onSpeakWithViewAdd(conversation.getQuestion());
+                conversation = conversationQuery.queryByQuestion(getContext(),conversation);
+                onSpeakWithViewAdd(conversation.getAnswer());
             }
         });
         askButton.setOnLongClickListener(new View.OnLongClickListener() {
@@ -91,12 +95,15 @@ public class TalkFragment extends Fragment implements SpeakerWithView {
         return rootView;
     }
     @Override
-    public void onInit(int status) {
+    public void onInit(int status) {}
 
-    }
     @Override
     public void onSpeakWithViewAdd(final String sentence){
         tts.speak(sentence, TextToSpeech.QUEUE_FLUSH, null);
+        onViewAdd(sentence);
+    }
+
+    public void onViewAdd(final String sentence){
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -107,6 +114,26 @@ public class TalkFragment extends Fragment implements SpeakerWithView {
                 conversationHolder.addView(tv);
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case SPEECH_RECOGNITION_CODE: {
+                if (resultCode == RESULT_OK && null != data) {
+                    String question = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS).get(0);
+                    Conversation conversation = new Conversation(question,null).normalizeQuestion();
+                    conversation = conversationQuery.queryByQuestion(getContext(),conversation);
+                    onViewAdd(conversation.getQuestion());
+                    if(conversation.getAnswer() == null || conversation.getAnswer() == "") {
+                        conversation.setAnswer("Sorry, I don't know");
+                    }
+                    onSpeakWithViewAdd(conversation.getAnswer());
+                }
+                break;
+            }
+        }
     }
 
 
@@ -121,5 +148,12 @@ public class TalkFragment extends Fragment implements SpeakerWithView {
         super.onDetach();
     }
 
-
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+    }
 }

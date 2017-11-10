@@ -2,6 +2,7 @@ package com.oaksmuth.aeccommunication.Controller;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.oaksmuth.aeccommunication.Model.Conversation;
 import com.oaksmuth.aeccommunication.Model.Topic;
@@ -38,8 +39,12 @@ public class ConversationQuery {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Cursor cursor = helper.rawQuery("SELECT Answer FROM Conversation WHERE Question = ?",new String[] {conversation.normalizeQuestion().getQuestion()});
-        conversation.setAnswer(cursor.getString(cursor.getColumnIndex("Answer")));
+        Cursor cursor = helper.rawQuery("SELECT Answer FROM Conversation WHERE Question = ? COLLATE NOCASE",new String[] {conversation.normalizeQuestion().getQuestion()});
+        cursor.moveToFirst();
+        if(cursor.getCount() >0) conversation.setAnswer(cursor.getString(cursor.getColumnIndex("Answer")));
+        else conversation.setAnswer("Sorry, I don't know for \"" + conversation.normalizeQuestion().getQuestion() + "\"" );
+        helper.close();
+        cursor.close();
         return conversation;
     }
 

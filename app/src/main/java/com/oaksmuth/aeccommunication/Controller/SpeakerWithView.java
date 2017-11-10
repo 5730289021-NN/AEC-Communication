@@ -8,4 +8,5 @@ import android.speech.tts.TextToSpeech;
 
 public interface SpeakerWithView extends TextToSpeech.OnInitListener {
     void onSpeakWithViewAdd(String sentence);
+    void onViewAdd(String sentence);
 }
