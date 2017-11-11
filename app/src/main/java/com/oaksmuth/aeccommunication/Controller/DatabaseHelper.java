@@ -66,6 +66,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void restoreDatabase() throws IOException {
+        File file = new File(targetPath);
+        file.delete();
+        transportDatabase();
+    }
+
     public void openDatabase(boolean readOnly) throws SQLException, IOException {
         if(isDatabaseAvailable()) {
             db = SQLiteDatabase.openDatabase(targetPath, null, readOnly ? SQLiteDatabase.OPEN_READONLY : SQLiteDatabase.OPEN_READWRITE);
@@ -79,9 +85,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor rawQuery(String sql, String[] args)
     {
-        return db.rawQuery(sql,args);
+        return db.rawQuery(sql, args);
     }
 
+    public void execSQL(String sql, String[] args) { db.execSQL(sql, args); }
     @Override
     public void onCreate(SQLiteDatabase db) {}
 

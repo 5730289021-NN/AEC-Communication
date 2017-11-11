@@ -3,6 +3,7 @@ package com.oaksmuth.aeccommunication.View;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -15,9 +16,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.oaksmuth.aeccommunication.Controller.ConversationQuery;
+import com.oaksmuth.aeccommunication.Controller.DatabaseHelper;
 import com.oaksmuth.aeccommunication.Model.Conversation;
 import com.oaksmuth.aeccommunication.Model.Topic;
 import com.oaksmuth.aeccommunication.R;
+
+import java.io.IOException;
 
 public class TeachFragment extends Fragment{
 
@@ -52,14 +56,15 @@ public class TeachFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_qa, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_teach, container, false);
         inputLayoutTopic = (TextInputLayout) rootView.findViewById(R.id.input_topic_layout);
         inputLayoutQuestion = (TextInputLayout) rootView.findViewById(R.id.input_question_layout);
         inputLayoutAnswer = (TextInputLayout) rootView.findViewById(R.id.input_answer_layout);
-        inputTopic = (EditText) rootView.findViewById(R.id.input_topic);
-        inputQuestion = (EditText) rootView.findViewById(R.id.input_question);
-        inputAnswer = (EditText) rootView.findViewById(R.id.input_answer);
+        inputTopic = (TextInputEditText) rootView.findViewById(R.id.input_topic);
+        inputQuestion = (TextInputEditText) rootView.findViewById(R.id.input_question);
+        inputAnswer = (TextInputEditText) rootView.findViewById(R.id.input_answer);
         submitButton = (Button) rootView.findViewById(R.id.btn_submit);
+        restoreButton = (Button) rootView.findViewById(R.id.btn_restore);
 
         inputTopic.addTextChangedListener(new TextWatcher() {
             @Override
@@ -119,7 +124,24 @@ public class TeachFragment extends Fragment{
                 if(topicInputStatus && questionInputStatus && answerInputStatus)
                 {
                     ConversationQuery conversationQuery = new ConversationQuery();
-                    //conversationQuery.addConversation();
+                    Topic topic = new Topic(getString(R.string.CustomHeaderName), inputTopic.getText().toString());
+                    Conversation conversation = new Conversation(inputQuestion.getText().toString(), inputAnswer.getText().toString()).normalizeQuestion();
+                    try {
+                        conversationQuery.addConversation(getActivity(), topic, conversation);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        restoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    new DatabaseHelper(getContext()).restoreDatabase();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });

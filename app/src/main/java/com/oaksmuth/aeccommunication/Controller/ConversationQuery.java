@@ -29,7 +29,16 @@ public class ConversationQuery {
     }
 
     public void addConversation(Context context, Topic topic, Conversation conversation) throws IOException {
-        //TODO
+        DatabaseHelper helper = new DatabaseHelper(context);
+        try {
+            helper.openDatabase(false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        helper.execSQL("INSERT OR IGNORE INTO Header(HeaderString) VALUES (?)",new String[] {topic.getHeader()});
+        helper.execSQL("INSERT OR IGNORE INTO Topic(HeaderID, TopicString) VALUES ((SELECT ID FROM Header WHERE HeaderString = ?), ?)",new String[] {topic.getHeader(), topic.getTopic()});
+        helper.execSQL("INSERT OR IGNORE INTO Conversation (TopicID, Question, Answer) VALUES ((SELECT ID from Topic WHERE TopicString = ?), ?, ?);",new String[] {topic.getTopic(), conversation.getQuestion(), conversation.getAnswer()});
+        helper.close();
     }
 
     public Conversation queryByQuestion(Context context, Conversation conversation) {

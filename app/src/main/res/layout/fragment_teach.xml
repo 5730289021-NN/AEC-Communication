@@ -1,5 +1,4 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,19 +9,19 @@
         android:orientation="vertical"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        android:paddingTop="60dp">
+        android:paddingTop="20dp">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_topic_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/input_topic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
-                android:hint="@string/topic" />
+                android:hint="@string/topic_hint" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -30,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/input_question"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/input_answer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -55,9 +54,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/submit"
-            android:background="@color/colorPrimary"
+            android:background="@color/colorSubmit"
             android:layout_marginTop="40dp"
             android:textColor="@android:color/white"/>
+
+        <Button android:id="@+id/btn_restore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Restore Original Data"
+            android:background="@color/colorWarning"
+            android:layout_marginTop="40dp"
+            android:textColor="@android:color/white"/>
+
+
 
     </LinearLayout>
 

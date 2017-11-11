@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/talkAskInput"
-        android:hint="@string/you_can_hold_ask_button_to_speak"
+        android:hint="@string/hold_to_ask"
         android:layout_alignBottom="@id/talkAskButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
