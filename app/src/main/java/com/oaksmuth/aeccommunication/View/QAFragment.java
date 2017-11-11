@@ -50,7 +50,6 @@ public class QAFragment extends Fragment implements SpeakingNotifier.OnSpeakingF
     private boolean isPlaying = false;
     private boolean isQuestion = true;
     private int playingAt = 0;
-    private String toTalk;
 
     public QAFragment() {
         // Required empty public constructor
@@ -217,20 +216,29 @@ public class QAFragment extends Fragment implements SpeakingNotifier.OnSpeakingF
     public void onSpeakWithViewAdd(String sentence){
         HashMap<String, String> map = new HashMap<>();
         map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
-        String QA = isQuestion ? "Question" : "Answer";
-        toTalk = QA + " \t" + String.valueOf(playingAt + 1) + "\t:\t" + conversations.get(playingAt).getQA(isQuestion);
-        tts.speak(toTalk, TextToSpeech.QUEUE_FLUSH, map);
-        onViewAdd(toTalk);
+        String toSpeak;
+        String toShow;
+        if(isQuestion)
+        {
+            toSpeak = "Question \t" + String.valueOf(playingAt + 1) + "\t:\t" + conversations.get(playingAt).getQA(true);
+            toShow = toSpeak;
+        }else
+        {
+            toSpeak = conversations.get(playingAt).getQA(false);
+            toShow = "Answer \t" + String.valueOf(playingAt + 1) + "\t:\t" + toSpeak;
+        }
+        tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, map);
+        onViewAdd(toShow);
     }
 
-    public void onViewAdd(String sentence){
+    public void onViewAdd(final String sentence){
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 TextView tv = new TextView(getContext());
                 scrollView.fullScroll(View.FOCUS_DOWN);
                 tv.setTextColor(Color.BLACK);
-                tv.setText(toTalk);
+                tv.setText(sentence);
                 conversationHolder.addView(tv);
             }
         });

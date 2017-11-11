@@ -66,14 +66,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void openDatabase() throws SQLException, IOException {
+    public void openDatabase(boolean readOnly) throws SQLException, IOException {
         if(isDatabaseAvailable()) {
-            db = SQLiteDatabase.openDatabase(targetPath, null, SQLiteDatabase.OPEN_READONLY);
+            db = SQLiteDatabase.openDatabase(targetPath, null, readOnly ? SQLiteDatabase.OPEN_READONLY : SQLiteDatabase.OPEN_READWRITE);
             db.execSQL("PRAGMA encoding = \"UTF-8\"");
         }
         else {
             transportDatabase();
-            openDatabase();
+            openDatabase(readOnly);
         }
     }
 

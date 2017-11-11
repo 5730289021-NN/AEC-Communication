@@ -17,7 +17,7 @@ public class TopicQuery {
     public ArrayList<Topic> queryAllTopic(Context context) throws IOException {
         ArrayList<Topic> topics = new ArrayList<>();
         DatabaseHelper helper = new DatabaseHelper(context);
-        helper.openDatabase();
+        helper.openDatabase(true);
         Cursor cursor = helper.rawQuery("SELECT Header.HeaderString, TopicString FROM Topic INNER JOIN Header ON Topic.HeaderID = Header.ID",null);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             topics.add(new Topic(cursor.getString(cursor.getColumnIndex("HeaderString")),cursor.getString(cursor.getColumnIndex("TopicString"))));
@@ -29,7 +29,7 @@ public class TopicQuery {
 
     public int findConversationAmount(Context context) throws IOException {
         DatabaseHelper helper = new DatabaseHelper(context);
-        helper.openDatabase();
+        helper.openDatabase(true);
         Cursor cursor = helper.rawQuery("SELECT COUNT(ID) FROM Conversation",null);
         cursor.moveToFirst();
         int value = cursor.getInt(cursor.getColumnIndex("COUNT(ID)"));
