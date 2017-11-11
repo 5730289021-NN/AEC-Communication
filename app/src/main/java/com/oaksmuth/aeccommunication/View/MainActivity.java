@@ -13,9 +13,9 @@ import com.oaksmuth.aeccommunication.Model.Topic;
 import com.oaksmuth.aeccommunication.R;
 
 public class MainActivity extends AppCompatActivity implements PlayFragment.OnTopicSelectedListener{
-    private  static final int PLAY = 27;
-    private  static final int TALK = 566;
-    private  static final int TEACH = 901;
+    private static final int PLAY = 27;
+    private static final int TALK = 566;
+    private static final int TEACH = 901;
 
     private String backState;
     private short screenState;
@@ -29,23 +29,29 @@ public class MainActivity extends AppCompatActivity implements PlayFragment.OnTo
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_play:
-                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_right);
-                    fragmentTransaction.replace(R.id.content, PlayFragment.newInstance()).commit();
-                    screenState= PLAY;
+                    if(screenState != PLAY) {
+                        fragmentTransaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
+                        fragmentTransaction.replace(R.id.content, PlayFragment.newInstance()).commit();
+                        screenState = PLAY;
+                    }
                     return true;
                 case R.id.navigation_talk:
-                    if(screenState< TALK){
-                        fragmentTransaction.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left);
-                    }else{
-                        fragmentTransaction.setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_right);
+                    if(screenState != TALK){
+                        if(screenState< TALK){
+                            fragmentTransaction.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left);
+                        }else{
+                            fragmentTransaction.setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_right);
+                        }
+                        fragmentTransaction.replace(R.id.content, TalkFragment.newInstance()).commit();
+                        screenState = TALK;
                     }
-                    fragmentTransaction.replace(R.id.content, TalkFragment.newInstance()).commit();
-                    screenState= TALK;
                     return true;
                 case R.id.navigation_teach:
-                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_right,R.anim.exit_to_left);
-                    fragmentTransaction.replace(R.id.content, TeachFragment.newInstance()).commit();
-                    screenState= TEACH;
+                    if(screenState != TEACH) {
+                        fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+                        fragmentTransaction.replace(R.id.content, TeachFragment.newInstance()).commit();
+                        screenState = TEACH;
+                    }
                     return true;
             }
 
@@ -58,10 +64,8 @@ public class MainActivity extends AppCompatActivity implements PlayFragment.OnTo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        //To place content with Play
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         PlayFragment playFragment = new PlayFragment();
